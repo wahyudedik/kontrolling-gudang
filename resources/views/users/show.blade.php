@@ -1,14 +1,16 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Supervisor Details') }} - {{ $user->name }}
             </h2>
-            <div class="flex gap-2">
-                <a href="{{ route('users.edit', $user) }}" class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600">
+            <div class="flex flex-wrap gap-2">
+                <a href="{{ route('users.edit', $user) }}"
+                    class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 text-sm">
                     Edit
                 </a>
-                <a href="{{ route('users.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+                <a href="{{ route('users.index') }}"
+                    class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 text-sm">
                     Back
                 </a>
             </div>
@@ -17,9 +19,9 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
+            <div class="bg-white shadow-sm rounded-lg p-4 sm:p-6 mb-6">
                 <h3 class="text-lg font-semibold mb-4">User Information</h3>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <p class="text-sm text-gray-600">Name</p>
                         <p class="text-lg font-medium">{{ $user->name }}</p>
@@ -47,15 +49,15 @@
                 <!-- Assigned Todos -->
                 <div class="bg-white shadow-sm rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">Assigned Todos ({{ $user->assignedTodos->count() }})</h3>
-                    @if($user->assignedTodos->count() > 0)
+                    @if ($user->assignedTodos->count() > 0)
                         <div class="space-y-2 max-h-96 overflow-y-auto">
-                            @foreach($user->assignedTodos as $todo)
+                            @foreach ($user->assignedTodos as $todo)
                                 <div class="border p-3 rounded-md">
                                     <p class="font-medium">{{ $todo->title }}</p>
                                     <p class="text-sm text-gray-600">
                                         Type: {{ ucfirst(str_replace('_', ' ', $todo->type)) }}
                                     </p>
-                                    @if($todo->due_date)
+                                    @if ($todo->due_date)
                                         <p class="text-sm text-red-600">
                                             Due: {{ $todo->due_date->format('d M Y') }}
                                         </p>
@@ -71,24 +73,26 @@
                 <!-- Daily Reports -->
                 <div class="bg-white shadow-sm rounded-lg p-6">
                     <h3 class="text-lg font-semibold mb-4">Daily Reports ({{ $user->dailyReports->count() }})</h3>
-                    @if($user->dailyReports->count() > 0)
+                    @if ($user->dailyReports->count() > 0)
                         <div class="space-y-2 max-h-96 overflow-y-auto">
-                            @foreach($user->dailyReports->take(10) as $report)
+                            @foreach ($user->dailyReports->take(10) as $report)
                                 <div class="border p-3 rounded-md">
                                     <p class="font-medium">{{ $report->report_date->format('d M Y') }}</p>
                                     <p class="text-sm text-gray-600">
                                         Todo: {{ $report->todoList->title }}
                                     </p>
                                     <p class="text-sm">
-                                        Status: 
-                                        <span class="px-2 py-1 text-xs rounded {{ $report->status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                        Status:
+                                        <span
+                                            class="px-2 py-1 text-xs rounded {{ $report->status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                                             {{ ucfirst($report->status) }}
                                         </span>
                                     </p>
                                 </div>
                             @endforeach
-                            @if($user->dailyReports->count() > 10)
-                                <p class="text-sm text-gray-500 text-center">... and {{ $user->dailyReports->count() - 10 }} more</p>
+                            @if ($user->dailyReports->count() > 10)
+                                <p class="text-sm text-gray-500 text-center">... and
+                                    {{ $user->dailyReports->count() - 10 }} more</p>
                             @endif
                         </div>
                     @else
@@ -99,4 +103,3 @@
         </div>
     </div>
 </x-app-layout>
-

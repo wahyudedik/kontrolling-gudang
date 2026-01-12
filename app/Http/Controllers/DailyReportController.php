@@ -148,8 +148,14 @@ class DailyReportController extends Controller
      */
     public function show(DailyReport $dailyReport): View
     {
-        // Ensure only the supervisor who created the report or super admin can view it
-        if ($dailyReport->supervisor_id !== auth()->id() && !auth()->user()->isSuperAdmin()) {
+        $user = auth()->user();
+        
+        // Super Admin can view all reports
+        // Supervisor can only view their own reports
+        $isSuperAdmin = $user->role === 'super_admin';
+        $isOwner = $dailyReport->supervisor_id === $user->id;
+        
+        if (!$isSuperAdmin && !$isOwner) {
             abort(403, 'Unauthorized action.');
         }
 

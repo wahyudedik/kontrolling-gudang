@@ -30,13 +30,17 @@ Route::middleware(['auth', 'superadmin'])->group(function () {
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
 });
 
+// Daily Reports - Show route accessible by both Super Admin and Supervisor
+Route::middleware('auth')->group(function () {
+    Route::get('daily-reports/{dailyReport}', [DailyReportController::class, 'show'])->name('daily-reports.show');
+});
+
 // Supervisor Routes
 Route::middleware(['auth', 'supervisor'])->group(function () {
     Route::get('supervisor/todos', [SupervisorTodoController::class, 'index'])->name('supervisor.todos');
     Route::get('daily-reports', [DailyReportController::class, 'index'])->name('daily-reports.index');
     Route::get('daily-reports/create/{todoList}', [DailyReportController::class, 'create'])->name('daily-reports.create');
     Route::post('daily-reports', [DailyReportController::class, 'store'])->name('daily-reports.store');
-    Route::get('daily-reports/{dailyReport}', [DailyReportController::class, 'show'])->name('daily-reports.show');
     Route::get('daily-reports/{dailyReport}/edit', [DailyReportController::class, 'edit'])->name('daily-reports.edit');
     Route::put('daily-reports/{dailyReport}', [DailyReportController::class, 'update'])->name('daily-reports.update');
     Route::delete('daily-reports/{dailyReport}', [DailyReportController::class, 'destroy'])->name('daily-reports.destroy');

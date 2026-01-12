@@ -1,7 +1,10 @@
 ---
 name: ""
 overview: ""
-todos: []
+todos:
+  - id: todo-1768252893497-g8egap154
+    content: ""
+    status: pending
 ---
 
 ---name: Warehouse Control Systemoverview: Membangun aplikasi web berbasis Laravel untuk kontroling gudang dengan sistem role-based (Super Admin & Supervisor), To Do List harian, input progress report, dan export Excel dengan filter rentang tanggal, task, dan supervisor.todos:
@@ -404,5 +407,3 @@ System
 - `SupervisorTodoController@index`: `TodoList::with('createdBy')->where('is_active', true)->get()`
 - `DailyReportController@index`: `DailyReport::with('supervisor', 'todoList', 'manPower', 'stockFinishGood', 'stockRawMaterial', 'warehouseConditions', 'suppliers')->get()`
 - `ReportController@index`: Eager load semua relationships yang diperlukan
-- `ReportController@export`: Gunakan eager loading sebelum export untuk performa optimal
-- **Gunakan `with()` method** di Eloquent queries untuk preload relationships
