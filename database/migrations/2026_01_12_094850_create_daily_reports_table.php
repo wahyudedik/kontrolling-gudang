@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('daily_reports', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->uuid('todo_list_id');
+            $table->uuid('supervisor_id');
+            $table->date('report_date');
+            $table->enum('status', ['draft', 'completed'])->default('draft');
+            $table->timestamps();
+
+            $table->foreign('todo_list_id')->references('id')->on('todo_lists')->onDelete('cascade');
+            $table->foreign('supervisor_id')->references('id')->on('users')->onDelete('cascade');
+            $table->index(['supervisor_id', 'report_date']);
+            $table->index(['todo_list_id', 'report_date']);
+            $table->unique(['todo_list_id', 'supervisor_id', 'report_date']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('daily_reports');
+    }
+};
