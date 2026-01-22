@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DailyReportController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SupervisorTodoController;
@@ -12,9 +13,14 @@ Route::get('/', function () {
     return redirect()->route('dashboard');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'id'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+})->name('lang.switch');
+
+Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -28,6 +34,7 @@ Route::middleware(['auth', 'superadmin'])->group(function () {
     Route::resource('users', UserController::class);
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export', [ReportController::class, 'export'])->name('reports.export');
+    Route::get('reports/export-pdf', [ReportController::class, 'exportPdf'])->name('reports.export_pdf');
 });
 
 // Daily Reports - Show route accessible by both Super Admin and Supervisor

@@ -44,6 +44,7 @@ class TodoListController extends Controller
         $todoList = TodoList::create([
             'title' => $request->title,
             'type' => $request->type,
+            'difficulty_level' => $request->difficulty_level ?? 'medium',
             'date' => $request->date,
             'due_date' => $request->due_date,
             'created_by' => $request->user()->id,

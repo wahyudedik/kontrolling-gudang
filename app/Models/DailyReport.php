@@ -17,6 +17,8 @@ class DailyReport extends Model
         'todo_list_id',
         'supervisor_id',
         'report_date',
+        'session', // morning, afternoon, evening
+        'photo_path',
         'status',
     ];
 

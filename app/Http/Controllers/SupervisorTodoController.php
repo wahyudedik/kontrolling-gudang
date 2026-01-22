@@ -17,14 +17,23 @@ class SupervisorTodoController extends Controller
         $today = now()->format('Y-m-d');
 
         // Only show todos assigned to the logged-in supervisor
-        // Exclude todos that already have a report for today
+        // For non-daily tasks: Exclude todos that already have a report for today
+        // For daily tasks: Always show them (status will be handled in view)
         $query = TodoList::with('createdBy')
             ->whereHas('supervisors', function ($q) use ($supervisorId) {
                 $q->where('users.id', $supervisorId);
             })
-            ->whereDoesntHave('dailyReports', function ($q) use ($supervisorId, $today) {
-                $q->where('supervisor_id', $supervisorId)
-                    ->whereDate('report_date', $today);
+            ->where(function ($q) use ($supervisorId, $today) {
+                // Non-daily tasks: hide if reported today
+                $q->where(function ($subQ) use ($supervisorId, $today) {
+                    $subQ->where('type', '!=', 'daily')
+                        ->whereDoesntHave('dailyReports', function ($reportQ) use ($supervisorId, $today) {
+                            $reportQ->where('supervisor_id', $supervisorId)
+                                ->whereDate('report_date', $today);
+                        });
+                })
+                    // Daily tasks: always show
+                    ->orWhere('type', 'daily');
             })
             ->active()
             ->latest();
@@ -39,7 +48,10 @@ class SupervisorTodoController extends Controller
             $query->where('id', $request->task_id);
         }
 
-        $todos = $query->paginate(12);
+        $todos = $query->with(['dailyReports' => function ($q) use ($supervisorId, $today) {
+            $q->where('supervisor_id', $supervisorId)
+                ->whereDate('report_date', $today);
+        }])->paginate(12);
 
         // Get all assigned todos for filter dropdown (without pagination)
         // Also exclude todos that already have a report for today

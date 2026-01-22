@@ -12,14 +12,14 @@
                 <form method="GET" action="{{ route('supervisor.todos') }}"
                     class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Due Date') }}</label>
                         <input type="date" name="due_date" value="{{ request('due_date') }}"
                             class="w-full rounded-md border-gray-300">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Task</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Task') }}</label>
                         <select name="task_id" class="w-full rounded-md border-gray-300">
-                            <option value="">All Tasks</option>
+                            <option value="">{{ __('All Tasks') }}</option>
                             @foreach ($allAssignedTodos as $todo)
                                 <option value="{{ $todo->id }}"
                                     {{ request('task_id') == $todo->id ? 'selected' : '' }}>
@@ -31,17 +31,18 @@
                     <div class="flex items-end">
                         <button type="submit"
                             class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                            Filter
+                            {{ __('Filter') }}
                         </button>
                     </div>
                 </form>
             </div>
 
             <!-- Info Message -->
-            @if($todos->count() === 0 && !request()->has('due_date') && !request()->has('task_id'))
+            @if ($todos->count() === 0 && !request()->has('due_date') && !request()->has('task_id'))
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
                     <p class="text-blue-800">
-                        <strong>Info:</strong> Semua todo untuk hari ini sudah diisi. Todo yang sudah diisi tidak akan muncul di daftar ini.
+                        <strong>Info:</strong>
+                        {{ __('Semua todo untuk hari ini sudah diisi. Todo yang sudah diisi tidak akan muncul di daftar ini.') }}
                     </p>
                 </div>
             @endif
@@ -53,22 +54,53 @@
                         <div class="p-6">
                             <h3 class="text-lg font-semibold mb-2">{{ $todo->title }}</h3>
                             <p class="text-sm text-gray-600 mb-2">
-                                Type: <span class="font-medium">
+                                {{ __('Type') }}: <span class="font-medium">
                                     @php
                                         $typeLabels = [
-                                            'man_power' => 'Man Power',
-                                            'finish_good' => 'Finish Good',
-                                            'raw_material' => 'Raw Material',
-                                            'gudang' => 'Gudang',
-                                            'supplier_datang' => 'Supplier Datang',
+                                            'man_power' => __('Man Power'),
+                                            'finish_good' => __('Finish Good'),
+                                            'raw_material' => __('Raw Material'),
+                                            'gudang' => __('Gudang'),
+                                            'supplier_datang' => __('Supplier Datang'),
+                                            'daily' => __('Habit Harian'),
                                         ];
                                     @endphp
                                     {{ $typeLabels[$todo->type] ?? ucfirst($todo->type) }}
                                 </span>
                             </p>
+
+                            @if ($todo->type === 'daily')
+                                <div class="mt-2 mb-4">
+                                    <p class="text-xs text-gray-500 mb-1">Progress Hari Ini:</p>
+                                    <div class="flex space-x-2">
+                                        @php
+                                            // Check dailyReports for this todo (loaded in controller)
+                                            $reports = $todo->dailyReports ?? collect();
+                                            $morning = $reports->where('session', 'morning')->first();
+                                            $afternoon = $reports->where('session', 'afternoon')->first();
+                                            $evening = $reports->where('session', 'evening')->first();
+                                        @endphp
+
+                                        <span
+                                            class="px-2 py-1 text-xs rounded {{ $morning ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500' }}">
+                                            {{ __('Morning') }} {{ $morning ? '✓' : '○' }}
+                                        </span>
+                                        <span
+                                            class="px-2 py-1 text-xs rounded {{ $afternoon ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500' }}">
+                                            {{ __('Afternoon') }} {{ $afternoon ? '✓' : '○' }}
+                                        </span>
+                                        <span
+                                            class="px-2 py-1 text-xs rounded {{ $evening ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500' }}">
+                                            {{ __('Evening') }} {{ $evening ? '✓' : '○' }}
+                                        </span>
+                                    </div>
+                                </div>
+                            @endif
+
                             @if ($todo->date)
                                 <p class="text-sm text-gray-600 mb-2">
-                                    Date: <span class="font-medium">{{ $todo->date->format('d M Y') }}</span>
+                                    {{ __('Date') }}: <span
+                                        class="font-medium">{{ $todo->date->format('d M Y') }}</span>
                                 </p>
                             @endif
                             @if ($todo->due_date)

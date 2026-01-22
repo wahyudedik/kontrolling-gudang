@@ -20,6 +20,8 @@ class TodoList extends Model
         'due_date',
         'created_by',
         'is_active',
+        'streak_count',
+        'difficulty_level',
     ];
 
     protected function casts(): array

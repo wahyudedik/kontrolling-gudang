@@ -24,7 +24,8 @@ class StoreTodoListRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'type' => ['required', Rule::in(['man_power', 'finish_good', 'raw_material', 'gudang', 'supplier_datang'])],
+            'type' => ['required', Rule::in(['man_power', 'finish_good', 'raw_material', 'gudang', 'supplier_datang', 'daily'])],
+            'difficulty_level' => ['nullable', Rule::in(['easy', 'medium', 'hard'])],
             'date' => ['nullable', 'date'],
             'due_date' => ['required', 'date'],
             'supervisor_ids' => ['required', 'array', 'min:1'],

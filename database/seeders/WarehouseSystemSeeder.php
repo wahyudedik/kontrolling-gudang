@@ -52,11 +52,12 @@ class WarehouseSystemSeeder extends Seeder
             'raw_material',
             'gudang',
             'supplier_datang',
+            'daily',
         ];
 
         $todoLists = [];
         $today = now();
-        
+
         // Create multiple todo lists for each type (2-3 per type)
         foreach ($todoTypes as $type) {
             $count = rand(2, 3);
@@ -68,24 +69,26 @@ class WarehouseSystemSeeder extends Seeder
                     'due_date' => $today->copy()->addDays(rand(1, 14)),
                     'created_by' => $superAdmin->id,
                     'is_active' => rand(0, 10) < 9, // 90% active
+                    'difficulty_level' => $type === 'daily' ? ['easy', 'medium', 'hard'][rand(0, 2)] : 'medium',
+                    'streak_count' => $type === 'daily' ? rand(0, 30) : 0,
                 ]);
 
-            // Create default todo items
-            $defaultItems = [
-                ['item_type' => 'man_power', 'order' => 1],
-                ['item_type' => 'stock_finish_good', 'order' => 2],
-                ['item_type' => 'stock_raw_material', 'order' => 3],
-                ['item_type' => 'warehouse_condition', 'order' => 4],
-                ['item_type' => 'supplier', 'order' => 5],
-            ];
+                // Create default todo items
+                $defaultItems = [
+                    ['item_type' => 'man_power', 'order' => 1],
+                    ['item_type' => 'stock_finish_good', 'order' => 2],
+                    ['item_type' => 'stock_raw_material', 'order' => 3],
+                    ['item_type' => 'warehouse_condition', 'order' => 4],
+                    ['item_type' => 'supplier', 'order' => 5],
+                ];
 
-            foreach ($defaultItems as $item) {
-                TodoItem::create([
-                    'todo_list_id' => $todoList->id,
-                    'item_type' => $item['item_type'],
-                    'order' => $item['order'],
-                ]);
-            }
+                foreach ($defaultItems as $item) {
+                    TodoItem::create([
+                        'todo_list_id' => $todoList->id,
+                        'item_type' => $item['item_type'],
+                        'order' => $item['order'],
+                    ]);
+                }
 
                 // Assign to random supervisors
                 $assignedSupervisors = collect($supervisors)->random(rand(1, min(3, count($supervisors))));
@@ -105,22 +108,25 @@ class WarehouseSystemSeeder extends Seeder
         foreach ($reportDates as $reportDate) {
             // Create 3-8 reports per day
             $reportsPerDay = rand(3, 8);
-            
+
             for ($j = 0; $j < $reportsPerDay; $j++) {
                 $todoList = collect($todoLists)->random();
-                
+
                 // Get supervisors assigned to this todo list
                 $assignedSupervisors = $todoList->supervisors;
                 if ($assignedSupervisors->isEmpty()) {
                     continue;
                 }
-                
+
                 $supervisor = $assignedSupervisors->random();
 
-                // Check if report already exists for this todo and supervisor on this date
+                $session = $todoList->type === 'daily' ? ['morning', 'afternoon', 'evening'][rand(0, 2)] : 'morning';
+
+                // Check if report already exists for this todo and supervisor on this date and session
                 $existingReport = DailyReport::where('todo_list_id', $todoList->id)
                     ->where('supervisor_id', $supervisor->id)
                     ->where('report_date', $reportDate->format('Y-m-d'))
+                    ->where('session', $session)
                     ->first();
 
                 if ($existingReport) {
@@ -132,6 +138,7 @@ class WarehouseSystemSeeder extends Seeder
                     'supervisor_id' => $supervisor->id,
                     'report_date' => $reportDate,
                     'status' => rand(0, 1) ? 'completed' : 'draft',
+                    'session' => $session,
                 ]);
 
                 // 4. Create Report Man Power
@@ -149,7 +156,7 @@ class WarehouseSystemSeeder extends Seeder
                     'Produk D - Karton',
                     'Produk E - Karton',
                 ];
-                
+
                 $selectedFinishGood = collect($finishGoodItems)->random(rand(2, 5));
                 foreach ($selectedFinishGood as $item) {
                     ReportStockFinishGood::create([
@@ -167,7 +174,7 @@ class WarehouseSystemSeeder extends Seeder
                     'Bahan Baku D',
                     'Bahan Baku E',
                 ];
-                
+
                 $selectedRawMaterial = collect($rawMaterialItems)->random(rand(2, 5));
                 foreach ($selectedRawMaterial as $item) {
                     ReportStockRawMaterial::create([
@@ -182,7 +189,7 @@ class WarehouseSystemSeeder extends Seeder
                 foreach ($warehouses as $warehouse) {
                     // Randomly select one condition (only one should be true)
                     $conditionIndex = rand(0, 4);
-                    
+
                     ReportWarehouseCondition::create([
                         'daily_report_id' => $dailyReport->id,
                         'warehouse' => $warehouse,
@@ -205,7 +212,7 @@ class WarehouseSystemSeeder extends Seeder
                     'CV Supplier F',
                     'CV Supplier G',
                 ];
-                
+
                 $selectedSuppliers = collect($supplierNames)->random(rand(1, 4));
                 foreach ($selectedSuppliers as $supplierName) {
                     ReportSupplier::create([
@@ -235,6 +242,7 @@ class WarehouseSystemSeeder extends Seeder
             'raw_material' => 'Laporan Stock Raw Material',
             'gudang' => 'Laporan Kondisi Gudang',
             'supplier_datang' => 'Laporan Supplier Datang',
+            'daily' => 'Cek Rutin Gudang (Harian)',
         ];
 
         return $titles[$type] ?? 'Todo List ' . ucfirst(str_replace('_', ' ', $type));

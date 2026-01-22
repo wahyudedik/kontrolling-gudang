@@ -29,8 +29,21 @@
                             <option value="raw_material" {{ old('type', $todoList->type) == 'raw_material' ? 'selected' : '' }}>Raw Material</option>
                             <option value="gudang" {{ old('type', $todoList->type) == 'gudang' ? 'selected' : '' }}>Gudang</option>
                             <option value="supplier_datang" {{ old('type', $todoList->type) == 'supplier_datang' ? 'selected' : '' }}>Supplier Datang</option>
+                            <option value="daily" {{ old('type', $todoList->type) == 'daily' ? 'selected' : '' }}>Habit Harian</option>
                         </select>
                         @error('type')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
+                        <select name="difficulty_level" class="w-full rounded-md border-gray-300">
+                            <option value="easy" {{ old('difficulty_level', $todoList->difficulty_level) == 'easy' ? 'selected' : '' }}>Easy</option>
+                            <option value="medium" {{ old('difficulty_level', $todoList->difficulty_level ?? 'medium') == 'medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="hard" {{ old('difficulty_level', $todoList->difficulty_level) == 'hard' ? 'selected' : '' }}>Hard</option>
+                        </select>
+                        @error('difficulty_level')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>

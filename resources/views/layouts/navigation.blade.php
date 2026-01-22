@@ -57,6 +57,19 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
+                        <!-- Language Switcher -->
+                        <div class="border-t border-gray-100"></div>
+                        <div class="px-4 py-2 text-xs text-gray-400">
+                            {{ __('Language') }}
+                        </div>
+                        <x-dropdown-link :href="route('lang.switch', 'id')">
+                            Indonesian
+                        </x-dropdown-link>
+                        <x-dropdown-link :href="route('lang.switch', 'en')">
+                            English
+                        </x-dropdown-link>
+                        <div class="border-t border-gray-100"></div>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

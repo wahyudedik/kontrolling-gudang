@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\FilterReportRequest;
 use App\Models\DailyReport;
 use App\Services\ExcelExportService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -98,5 +99,45 @@ class ReportController extends Controller
 
         $excelExportService = new \App\Services\ExcelExportService();
         return $excelExportService->exportReports($reports, $request->all());
+    }
+
+    /**
+     * Export reports to PDF
+     */
+    public function exportPdf(FilterReportRequest $request)
+    {
+        $query = DailyReport::with([
+            'todoList.createdBy',
+            'supervisor',
+            'manPower',
+            'stockFinishGood',
+            'stockRawMaterial',
+            'warehouseConditions',
+            'suppliers',
+        ]);
+
+        // Apply same filters
+        if ($request->filled('due_date')) {
+            $query->whereHas('todoList', function ($q) use ($request) {
+                $q->whereDate('due_date', $request->due_date);
+            });
+        }
+        if ($request->filled('task_id')) {
+            $query->where('todo_list_id', $request->task_id);
+        }
+        if ($request->filled('supervisor_id')) {
+            $query->where('supervisor_id', $request->supervisor_id);
+        }
+        if ($request->filled('from_date')) {
+            $query->whereDate('report_date', '>=', $request->from_date);
+        }
+        if ($request->filled('to_date')) {
+            $query->whereDate('report_date', '<=', $request->to_date);
+        }
+
+        $reports = $query->get();
+
+        $pdf = Pdf::loadView('reports.pdf', compact('reports'));
+        return $pdf->download('daily-reports.pdf');
     }
 }

@@ -27,27 +27,29 @@ class StoreDailyReportRequest extends FormRequest
         $rules = [
             'todo_list_id' => ['required', 'uuid', 'exists:todo_lists,id'],
             'report_date' => ['required', 'date'],
+            'session' => ['nullable', 'in:morning,afternoon,evening'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'],
         ];
 
         // Conditional validation based on todo type
-        if ($todoType === 'man_power') {
+        if ($todoType === 'man_power' || $todoType === 'daily') {
             $rules['man_power.employees_present'] = ['required', 'integer', 'min:0'];
             $rules['man_power.employees_absent'] = ['required', 'integer', 'min:0'];
         }
 
-        if ($todoType === 'finish_good') {
+        if ($todoType === 'finish_good' || $todoType === 'daily') {
             $rules['stock_finish_good'] = ['sometimes', 'array'];
             $rules['stock_finish_good.*.item_name'] = ['required_with:stock_finish_good.*.quantity', 'string', 'max:255'];
             $rules['stock_finish_good.*.quantity'] = ['required_with:stock_finish_good.*.item_name', 'integer', 'min:0'];
         }
 
-        if ($todoType === 'raw_material') {
+        if ($todoType === 'raw_material' || $todoType === 'daily') {
             $rules['stock_raw_material'] = ['sometimes', 'array'];
             $rules['stock_raw_material.*.item_name'] = ['required_with:stock_raw_material.*.quantity', 'string', 'max:255'];
             $rules['stock_raw_material.*.quantity'] = ['required_with:stock_raw_material.*.item_name', 'numeric', 'min:0'];
         }
 
-        if ($todoType === 'gudang') {
+        if ($todoType === 'gudang' || $todoType === 'daily') {
             $rules['warehouse_conditions'] = ['sometimes', 'array'];
             $rules['warehouse_conditions.*.warehouse'] = ['required_with:warehouse_conditions', 'in:cs1,cs2,cs3,cs4,cs5,cs6'];
             $rules['warehouse_conditions.*.sangat_bersih'] = ['sometimes', 'boolean'];
@@ -58,10 +60,14 @@ class StoreDailyReportRequest extends FormRequest
             $rules['warehouse_conditions.*.notes'] = ['nullable', 'string'];
         }
 
-        if ($todoType === 'supplier_datang') {
+        if ($todoType === 'supplier_datang' || $todoType === 'daily') {
             $rules['suppliers'] = ['sometimes', 'array'];
             $rules['suppliers.*.supplier_name'] = ['required_with:suppliers', 'string', 'max:255'];
             $rules['suppliers.*.jenis_barang'] = ['nullable', 'string', 'max:255'];
+        }
+
+        if ($todoType === 'daily') {
+            $rules['session'] = ['required', 'in:morning,afternoon,evening'];
         }
 
         return $rules;

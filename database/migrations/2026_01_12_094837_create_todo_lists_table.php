@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('todo_lists', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('title');
-            $table->enum('type', ['man_power', 'finish_good', 'raw_material', 'gudang_cs1', 'gudang_cs2', 'gudang_cs3', 'gudang_cs4', 'gudang_cs5', 'gudang_cs6', 'supplier_datang']);
+            $table->enum('type', ['man_power', 'finish_good', 'raw_material', 'gudang_cs1', 'gudang_cs2', 'gudang_cs3', 'gudang_cs4', 'gudang_cs5', 'gudang_cs6', 'gudang', 'supplier_datang', 'daily']);
             $table->date('date')->nullable();
             $table->uuid('created_by');
             $table->boolean('is_active')->default(true);

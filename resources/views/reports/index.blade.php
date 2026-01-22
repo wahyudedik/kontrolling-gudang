@@ -4,10 +4,16 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('Reports') }}
             </h2>
-            <a href="{{ route('reports.export', request()->all()) }}"
-                class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm sm:text-base">
-                Export Excel
-            </a>
+            <div class="flex gap-2">
+                <a href="{{ route('reports.export', request()->all()) }}"
+                    class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 text-sm sm:text-base">
+                    Export Excel
+                </a>
+                <a href="{{ route('reports.export_pdf', request()->all()) }}"
+                    class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm sm:text-base">
+                    Export PDF
+                </a>
+            </div>
         </div>
     </x-slot>
 

@@ -19,13 +19,8 @@ return new class extends Migration
         // Step 1: Change enum to VARCHAR temporarily
         DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type VARCHAR(50)");
 
-        // Step 2: Update existing data - consolidate gudang types
-        DB::table('todo_lists')
-            ->whereIn('type', ['gudang_cs1', 'gudang_cs2', 'gudang_cs3', 'gudang_cs4', 'gudang_cs5', 'gudang_cs6'])
-            ->update(['type' => 'gudang']);
-
-        // Step 3: Change back to enum with new values
-        DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type ENUM('man_power', 'finish_good', 'raw_material', 'gudang', 'supplier_datang')");
+        // Step 2: Change back to enum with new values including 'daily'
+        DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type ENUM('man_power', 'finish_good', 'raw_material', 'gudang', 'supplier_datang', 'daily')");
     }
 
     /**
@@ -39,8 +34,8 @@ return new class extends Migration
 
         DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type VARCHAR(50)");
         DB::table('todo_lists')
-            ->where('type', 'gudang')
-            ->update(['type' => 'gudang_cs1']);
-        DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type ENUM('man_power', 'finish_good', 'raw_material', 'gudang_cs1', 'gudang_cs2', 'gudang_cs3', 'gudang_cs4', 'gudang_cs5', 'gudang_cs6', 'supplier_datang')");
+            ->where('type', 'daily')
+            ->delete(); // Remove daily habits before reverting
+        DB::statement("ALTER TABLE todo_lists MODIFY COLUMN type ENUM('man_power', 'finish_good', 'raw_material', 'gudang', 'supplier_datang')");
     }
 };

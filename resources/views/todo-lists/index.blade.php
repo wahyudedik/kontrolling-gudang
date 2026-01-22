@@ -4,9 +4,9 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 {{ __('To Do Lists') }}
             </h2>
-            <a href="{{ route('todo-lists.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm sm:text-base">
+            {{-- <a href="{{ route('todo-lists.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm sm:text-base">
                 + New Todo
-            </a>
+            </a> --}}
         </div>
     </x-slot>
 
