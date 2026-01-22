@@ -25,7 +25,7 @@ class DashboardController extends Controller
         // Calculate percentage of supervisors who completed 3 sessions per day
         $dates = [];
         $complianceData = [];
-        
+
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $dateStr = $date->format('Y-m-d');
@@ -57,7 +57,7 @@ class DashboardController extends Controller
         // 3. Warehouse Cleanliness Trends (Last 7 Days)
         // Average score per day (5=Sangat Bersih, 1=Tidak Bersih)
         $cleanlinessData = [];
-        
+
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::today()->subDays($i);
             $dateStr = $date->format('Y-m-d');
@@ -77,7 +77,7 @@ class DashboardController extends Controller
                     elseif ($condition->check_3) $score = 3;
                     elseif ($condition->check_4) $score = 2;
                     elseif ($condition->check_5) $score = 1;
-                    
+
                     if ($score > 0) {
                         $totalScore += $score;
                         $count++;
@@ -121,7 +121,7 @@ class DashboardController extends Controller
         // Let's calculate individual supervisor compliance for the leaderboard instead
         $leaderboard = [];
         $supervisors = User::where('role', 'supervisor')->get();
-        
+
         foreach ($supervisors as $supervisor) {
             // Count total days with 3 sessions completed
             $daysCompleted = DB::table('daily_reports')
@@ -129,19 +129,19 @@ class DashboardController extends Controller
                 ->where('todo_lists.type', 'daily')
                 ->where('daily_reports.supervisor_id', $supervisor->id)
                 ->select(DB::raw('DATE(daily_reports.report_date) as date'))
-                ->groupBy('date')
+                ->groupBy(DB::raw('DATE(daily_reports.report_date)'))
                 ->havingRaw('COUNT(DISTINCT daily_reports.session) >= 3')
                 ->get()
                 ->count();
-            
+
             $leaderboard[] = [
                 'name' => $supervisor->name,
                 'score' => $daysCompleted
             ];
         }
-        
+
         // Sort by score desc
-        usort($leaderboard, function($a, $b) {
+        usort($leaderboard, function ($a, $b) {
             return $b['score'] <=> $a['score'];
         });
         $leaderboard = array_slice($leaderboard, 0, 5);

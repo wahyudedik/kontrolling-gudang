@@ -13,9 +13,100 @@
 
                 @php
                     $todoType = $dailyReport->todoList->type;
+
+                    // Determine which sections to show based on todo type
+                    $showManPower = $todoType === 'man_power';
+                    $showFinishGood = $todoType === 'finish_good';
+                    $showRawMaterial = $todoType === 'raw_material';
+                    $showWarehouse = $todoType === 'gudang';
+                    $showSupplier = $todoType === 'supplier_datang';
+
+                    // If type is 'daily', enable all sections
+                    if ($todoType === 'daily') {
+                        $showManPower = true;
+                        $showFinishGood = true;
+                        $showRawMaterial = true;
+                        $showWarehouse = true;
+                        $showSupplier = true;
+                    }
                 @endphp
 
-                @if($todoType === 'man_power')
+                <!-- Session and Photo Upload (Only for Daily Reports) -->
+                <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Informasi Laporan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Report</label>
+                            <input type="date" name="report_date" value="{{ old('report_date', $dailyReport->report_date->format('Y-m-d')) }}"
+                                required class="w-full rounded-md border-gray-300">
+                            @error('report_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        @if ($todoType === 'daily')
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Sesi</label>
+                                <select name="session" class="w-full rounded-md border-gray-300">
+                                    <option value="morning" {{ old('session', $dailyReport->session) == 'morning' ? 'selected' : '' }}>Pagi (00:00 - 11:59)</option>
+                                    <option value="afternoon" {{ old('session', $dailyReport->session) == 'afternoon' ? 'selected' : '' }}>Siang (12:00 - 15:59)</option>
+                                    <option value="evening" {{ old('session', $dailyReport->session) == 'evening' ? 'selected' : '' }}>Sore (16:00 - 23:59)</option>
+                                </select>
+                                @error('session')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
+
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto Bukti (Umum)</label>
+                            @if($dailyReport->photo_path)
+                                <div class="mb-2">
+                                    <p class="text-xs text-gray-500">Foto saat ini:</p>
+                                    <img src="{{ Storage::url($dailyReport->photo_path) }}" class="h-20 w-auto rounded border">
+                                </div>
+                            @endif
+                            <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png"
+                                class="w-full rounded-md border-gray-300">
+                            <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Maks: 2MB. Biarkan kosong jika tidak ingin mengubah.</p>
+                            @error('photo')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+
+                            <!-- Image Preview -->
+                            <div id="imagePreviewContainer" class="mt-4 hidden">
+                                <p class="text-sm text-gray-600 mb-2">Preview Baru:</p>
+                                <img id="imagePreview" src="#" alt="Image Preview"
+                                    class="max-w-xs rounded-lg shadow-md border border-gray-200">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <script>
+                    const photoInput = document.getElementById('photoInput');
+                    const previewContainer = document.getElementById('imagePreviewContainer');
+                    const previewImage = document.getElementById('imagePreview');
+
+                    if (photoInput) {
+                        photoInput.addEventListener('change', function() {
+                            const file = this.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    previewImage.src = e.target.result;
+                                    previewContainer.classList.remove('hidden');
+                                }
+                                reader.readAsDataURL(file);
+                            } else {
+                                previewContainer.classList.add('hidden');
+                                previewImage.src = '#';
+                            }
+                        });
+                    }
+                </script>
+
+                @if($showManPower)
                     <!-- Man Power Section -->
                     <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
                         <h3 class="text-lg font-semibold mb-4">1. Man Power</h3>
@@ -168,6 +259,17 @@
                                         <label for="notes_{{ $warehouse }}" class="block text-sm font-medium text-gray-700">Notes</label>
                                         <textarea name="warehouse_conditions[{{ $index }}][notes]" id="notes_{{ $warehouse }}" rows="2" 
                                                   class="w-full rounded-md border-gray-300">{{ old("warehouse_conditions.$index.notes", $condition?->notes) }}</textarea>
+                                    </div>
+                                    <div class="mt-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto</label>
+                                        @if($condition?->photo_path)
+                                            <div class="mb-2">
+                                                <img src="{{ Storage::url($condition->photo_path) }}" class="h-16 w-auto rounded border">
+                                            </div>
+                                        @endif
+                                        <input type="file" name="warehouse_conditions[{{ $index }}][photo]"
+                                            accept="image/jpeg,image/png"
+                                            class="w-full text-sm text-gray-500 rounded-md border border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
                                     </div>
                                 </div>
                             @endforeach

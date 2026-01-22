@@ -58,6 +58,7 @@ class StoreDailyReportRequest extends FormRequest
             $rules['warehouse_conditions.*.kurang_bersih'] = ['sometimes', 'boolean'];
             $rules['warehouse_conditions.*.tidak_bersih'] = ['sometimes', 'boolean'];
             $rules['warehouse_conditions.*.notes'] = ['nullable', 'string'];
+            $rules['warehouse_conditions.*.photo'] = ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'];
         }
 
         if ($todoType === 'supplier_datang' || $todoType === 'daily') {

@@ -116,6 +116,14 @@ class DailyReportController extends Controller
 
                         // Only save if at least one checkbox is checked
                         if ($check1 || $check2 || $check3 || $check4 || $check5) {
+                            $photoPath = null;
+                            if (isset($condition['photo']) && $condition['photo'] instanceof \Illuminate\Http\UploadedFile) {
+                                $year = date('Y');
+                                $month = date('m');
+                                $filename = \Illuminate\Support\Str::uuid() . '.' . $condition['photo']->getClientOriginalExtension();
+                                $photoPath = $condition['photo']->storeAs("uploads/gudang/{$year}/{$month}", $filename, 'public');
+                            }
+
                             $conditionData = [
                                 'warehouse' => $condition['warehouse'],
                                 'check_1' => $check1,
@@ -124,6 +132,7 @@ class DailyReportController extends Controller
                                 'check_4' => $check4,
                                 'check_5' => $check5,
                                 'notes' => $condition['notes'] ?? null,
+                                'photo_path' => $photoPath,
                             ];
                             $dailyReport->warehouseConditions()->create($conditionData);
                         }
@@ -269,12 +278,16 @@ class DailyReportController extends Controller
             }
         }
 
-        // Update Warehouse Conditions (delete and recreate)
+        // Update Warehouse Conditions (delete and recreate, preserving photos)
         if ($request->has('warehouse_conditions')) {
+            // Get existing photos mapped by warehouse
+            $existingPhotos = $dailyReport->warehouseConditions->pluck('photo_path', 'warehouse')->toArray();
+
             $dailyReport->warehouseConditions()->delete();
-            foreach ($request->warehouse_conditions as $condition) {
+
+            foreach ($request->warehouse_conditions as $index => $condition) {
                 if (!empty($condition['warehouse'])) {
-                    // Convert checkbox values to boolean (mapping from view field names to database field names)
+                    // Convert checkbox values to boolean
                     $check1 = isset($condition['sangat_bersih']) && $condition['sangat_bersih'] == '1';
                     $check2 = isset($condition['bersih']) && $condition['bersih'] == '1';
                     $check3 = isset($condition['cukup_bersih']) && $condition['cukup_bersih'] == '1';
@@ -283,6 +296,21 @@ class DailyReportController extends Controller
 
                     // Only save if at least one checkbox is checked
                     if ($check1 || $check2 || $check3 || $check4 || $check5) {
+                        $photoPath = null;
+
+                        // Check for new photo upload
+                        if ($request->hasFile("warehouse_conditions.{$index}.photo")) {
+                            $file = $request->file("warehouse_conditions.{$index}.photo");
+                            $year = date('Y');
+                            $month = date('m');
+                            $filename = \Illuminate\Support\Str::uuid() . '.' . $file->getClientOriginalExtension();
+                            $photoPath = $file->storeAs("uploads/gudang/{$year}/{$month}", $filename, 'public');
+                        }
+                        // If no new photo, preserve existing one
+                        elseif (isset($existingPhotos[$condition['warehouse']])) {
+                            $photoPath = $existingPhotos[$condition['warehouse']];
+                        }
+
                         $conditionData = [
                             'warehouse' => $condition['warehouse'],
                             'check_1' => $check1,
@@ -291,6 +319,7 @@ class DailyReportController extends Controller
                             'check_4' => $check4,
                             'check_5' => $check5,
                             'notes' => $condition['notes'] ?? null,
+                            'photo_path' => $photoPath,
                         ];
                         $dailyReport->warehouseConditions()->create($conditionData);
                     }

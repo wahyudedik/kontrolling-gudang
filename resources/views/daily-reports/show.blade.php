@@ -21,6 +21,28 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <!-- General Info & Main Photo -->
+            <div class="bg-white shadow-sm rounded-lg p-4 sm:p-6">
+                <h3 class="text-lg font-semibold mb-4">Informasi Laporan</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Tanggal</p>
+                        <p class="text-lg font-medium">{{ $dailyReport->report_date->format('d M Y') }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Sesi</p>
+                        <p class="text-lg font-medium capitalize">{{ $dailyReport->session ?? '-' }}</p>
+                    </div>
+                    @if ($dailyReport->photo_path)
+                        <div class="md:col-span-2 mt-4">
+                            <p class="text-sm text-gray-600 mb-2">Foto Bukti (Umum)</p>
+                            <img src="{{ Storage::url($dailyReport->photo_path) }}" alt="Foto Bukti"
+                                class="rounded-lg shadow-md max-h-96 object-cover">
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <!-- Man Power -->
             @if ($dailyReport->manPower)
                 <div class="bg-white shadow-sm rounded-lg p-4 sm:p-6">
@@ -96,6 +118,14 @@
                                 @endif
                                 @if ($condition->notes)
                                     <p class="text-sm text-gray-600 mt-2">{{ $condition->notes }}</p>
+                                @endif
+                                @if ($condition->photo_path)
+                                    <div class="mt-2">
+                                        <img src="{{ Storage::url($condition->photo_path) }}"
+                                            alt="Foto {{ $condition->warehouse }}"
+                                            class="rounded-lg shadow-sm h-32 w-full object-cover cursor-pointer hover:opacity-90"
+                                            onclick="window.open(this.src, '_blank')">
+                                    </div>
                                 @endif
                             </div>
                         @endforeach

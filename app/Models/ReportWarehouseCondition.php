@@ -22,6 +22,7 @@ class ReportWarehouseCondition extends Model
         'check_4',
         'check_5',
         'notes',
+        'photo_path',
     ];
 
     protected function casts(): array

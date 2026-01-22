@@ -77,7 +77,7 @@
                         @endif
 
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto Bukti</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto Bukti (Umum)</label>
                             <input type="file" name="photo" id="photoInput" accept="image/jpeg,image/png"
                                 class="w-full rounded-md border-gray-300">
                             <p class="text-xs text-gray-500 mt-1">Format: JPG, PNG. Maks: 2MB.</p>
@@ -100,20 +100,22 @@
                     const previewContainer = document.getElementById('imagePreviewContainer');
                     const previewImage = document.getElementById('imagePreview');
 
-                    photoInput.addEventListener('change', function() {
-                        const file = this.files[0];
-                        if (file) {
-                            const reader = new FileReader();
-                            reader.onload = function(e) {
-                                previewImage.src = e.target.result;
-                                previewContainer.classList.remove('hidden');
+                    if (photoInput) {
+                        photoInput.addEventListener('change', function() {
+                            const file = this.files[0];
+                            if (file) {
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    previewImage.src = e.target.result;
+                                    previewContainer.classList.remove('hidden');
+                                }
+                                reader.readAsDataURL(file);
+                            } else {
+                                previewContainer.classList.add('hidden');
+                                previewImage.src = '#';
                             }
-                            reader.readAsDataURL(file);
-                        } else {
-                            previewContainer.classList.add('hidden');
-                            previewImage.src = '#';
-                        }
-                    });
+                        });
+                    }
                 </script>
 
                 @if ($showManPower)
@@ -143,7 +145,7 @@
                     </div>
                 @endif
 
-                @if ($todoType === 'finish_good')
+                @if ($showFinishGood)
                     <!-- Stock Finish Good Section -->
                     <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
                         <h3 class="text-lg font-semibold mb-4">Stock Finish Good (Karton)</h3>
@@ -194,7 +196,7 @@
                     </div>
                 @endif
 
-                @if ($todoType === 'gudang')
+                @if ($showWarehouse)
                     <!-- Warehouse Condition Section -->
                     <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
                         <h3 class="text-lg font-semibold mb-4">Kondisi Gudang</h3>
@@ -242,6 +244,12 @@
                                         <textarea name="warehouse_conditions[{{ $index }}][notes]" id="notes_{{ $warehouse }}" rows="2"
                                             class="w-full rounded-md border-gray-300"></textarea>
                                     </div>
+                                    <div class="mt-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto</label>
+                                        <input type="file" name="warehouse_conditions[{{ $index }}][photo]"
+                                            accept="image/jpeg,image/png"
+                                            class="w-full text-sm text-gray-500 rounded-md border border-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -254,7 +262,7 @@
                     </div>
                 @endif
 
-                @if ($todoType === 'supplier_datang')
+                @if ($showSupplier)
                     <!-- Suppliers Section -->
                     <div class="bg-white shadow-sm rounded-lg p-6 mb-6">
                         <h3 class="text-lg font-semibold mb-4">5. Supplier Datang</h3>

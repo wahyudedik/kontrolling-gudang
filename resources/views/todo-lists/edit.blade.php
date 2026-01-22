@@ -13,8 +13,8 @@
                 <div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                        <input type="text" name="title" value="{{ old('title', $todoList->title) }}" required 
-                               class="w-full rounded-md border-gray-300">
+                        <input type="text" name="title" value="{{ old('title', $todoList->title) }}" required
+                            class="w-full rounded-md border-gray-300">
                         @error('title')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
@@ -24,12 +24,21 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
                         <select name="type" id="type" required class="w-full rounded-md border-gray-300">
                             <option value="">Select Type</option>
-                            <option value="man_power" {{ old('type', $todoList->type) == 'man_power' ? 'selected' : '' }}>Man Power</option>
-                            <option value="finish_good" {{ old('type', $todoList->type) == 'finish_good' ? 'selected' : '' }}>Finish Good</option>
-                            <option value="raw_material" {{ old('type', $todoList->type) == 'raw_material' ? 'selected' : '' }}>Raw Material</option>
-                            <option value="gudang" {{ old('type', $todoList->type) == 'gudang' ? 'selected' : '' }}>Gudang</option>
-                            <option value="supplier_datang" {{ old('type', $todoList->type) == 'supplier_datang' ? 'selected' : '' }}>Supplier Datang</option>
-                            <option value="daily" {{ old('type', $todoList->type) == 'daily' ? 'selected' : '' }}>Habit Harian</option>
+                            <option value="man_power"
+                                {{ old('type', $todoList->type) == 'man_power' ? 'selected' : '' }}>Man Power</option>
+                            <option value="finish_good"
+                                {{ old('type', $todoList->type) == 'finish_good' ? 'selected' : '' }}>Finish Good
+                            </option>
+                            <option value="raw_material"
+                                {{ old('type', $todoList->type) == 'raw_material' ? 'selected' : '' }}>Raw Material
+                            </option>
+                            <option value="gudang" {{ old('type', $todoList->type) == 'gudang' ? 'selected' : '' }}>
+                                Gudang</option>
+                            <option value="supplier_datang"
+                                {{ old('type', $todoList->type) == 'supplier_datang' ? 'selected' : '' }}>Supplier
+                                Datang</option>
+                            <option value="daily" {{ old('type', $todoList->type) == 'daily' ? 'selected' : '' }}>Habit
+                                Harian</option>
                         </select>
                         @error('type')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
@@ -39,38 +48,48 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Difficulty Level</label>
                         <select name="difficulty_level" class="w-full rounded-md border-gray-300">
-                            <option value="easy" {{ old('difficulty_level', $todoList->difficulty_level) == 'easy' ? 'selected' : '' }}>Easy</option>
-                            <option value="medium" {{ old('difficulty_level', $todoList->difficulty_level ?? 'medium') == 'medium' ? 'selected' : '' }}>Medium</option>
-                            <option value="hard" {{ old('difficulty_level', $todoList->difficulty_level) == 'hard' ? 'selected' : '' }}>Hard</option>
+                            <option value="easy"
+                                {{ old('difficulty_level', $todoList->difficulty_level) == 'easy' ? 'selected' : '' }}>
+                                Easy</option>
+                            <option value="medium"
+                                {{ old('difficulty_level', $todoList->difficulty_level ?? 'medium') == 'medium' ? 'selected' : '' }}>
+                                Medium</option>
+                            <option value="hard"
+                                {{ old('difficulty_level', $todoList->difficulty_level) == 'hard' ? 'selected' : '' }}>
+                                Hard</option>
                         </select>
                         @error('difficulty_level')
                             <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                        <input type="date" name="date" value="{{ old('date', $todoList->date?->format('Y-m-d')) }}" 
-                               class="w-full rounded-md border-gray-300">
-                        @error('date')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <div id="date-fields">
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                            <input type="date" name="date" id="date"
+                                value="{{ old('date', $todoList->date?->format('Y-m-d')) }}"
+                                class="w-full rounded-md border-gray-300">
+                            @error('date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                        <input type="date" name="due_date" value="{{ old('due_date', $todoList->due_date?->format('Y-m-d')) }}" required 
-                               class="w-full rounded-md border-gray-300">
-                        @error('due_date')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                            <input type="date" name="due_date" id="due_date"
+                                value="{{ old('due_date', $todoList->due_date?->format('Y-m-d')) }}" required
+                                class="w-full rounded-md border-gray-300">
+                            @error('due_date')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                     </div>
 
                     <div>
                         <label class="flex items-center">
-                            <input type="checkbox" name="is_active" value="1" 
-                                   {{ old('is_active', $todoList->is_active) ? 'checked' : '' }}
-                                   class="rounded border-gray-300">
+                            <input type="checkbox" name="is_active" value="1"
+                                {{ old('is_active', $todoList->is_active) ? 'checked' : '' }}
+                                class="rounded border-gray-300">
                             <span class="ml-2 text-sm text-gray-700">Active</span>
                         </label>
                     </div>
@@ -78,11 +97,11 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Assign to Supervisors</label>
                         <div class="space-y-2 max-h-48 overflow-y-auto border border-gray-300 rounded-md p-3">
-                            @foreach($supervisors as $supervisor)
+                            @foreach ($supervisors as $supervisor)
                                 <label class="flex items-center">
-                                    <input type="checkbox" name="supervisor_ids[]" value="{{ $supervisor->id }}" 
-                                           {{ in_array($supervisor->id, old('supervisor_ids', $todoList->supervisors->pluck('id')->toArray())) ? 'checked' : '' }}
-                                           class="rounded border-gray-300">
+                                    <input type="checkbox" name="supervisor_ids[]" value="{{ $supervisor->id }}"
+                                        {{ in_array($supervisor->id, old('supervisor_ids', $todoList->supervisors->pluck('id')->toArray())) ? 'checked' : '' }}
+                                        class="rounded border-gray-300">
                                     <span class="ml-2 text-sm text-gray-700">{{ $supervisor->name }}</span>
                                 </label>
                             @endforeach
@@ -94,7 +113,8 @@
                     </div>
 
                     <div class="flex justify-end gap-4">
-                        <a href="{{ route('todo-lists.index') }}" class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
+                        <a href="{{ route('todo-lists.index') }}"
+                            class="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600">
                             Cancel
                         </a>
                         <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
@@ -106,5 +126,24 @@
         </div>
     </div>
 
-</x-app-layout>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelect = document.getElementById('type');
+            const dateFields = document.getElementById('date-fields');
+            const dueDateInput = document.getElementById('due_date');
 
+            function toggleDateFields() {
+                if (typeSelect.value === 'daily') {
+                    dateFields.style.display = 'none';
+                    dueDateInput.removeAttribute('required');
+                } else {
+                    dateFields.style.display = 'block';
+                    dueDateInput.setAttribute('required', 'required');
+                }
+            }
+
+            typeSelect.addEventListener('change', toggleDateFields);
+            toggleDateFields(); // Initial check
+        });
+    </script>
+</x-app-layout>

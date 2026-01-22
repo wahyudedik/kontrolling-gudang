@@ -41,12 +41,20 @@ class TodoListController extends Controller
      */
     public function store(StoreTodoListRequest $request): RedirectResponse
     {
+        $data = $request->validated();
+
+        // If type is daily, ensure dates are null
+        if ($request->type === 'daily') {
+            $data['date'] = null;
+            $data['due_date'] = null;
+        }
+
         $todoList = TodoList::create([
-            'title' => $request->title,
-            'type' => $request->type,
-            'difficulty_level' => $request->difficulty_level ?? 'medium',
-            'date' => $request->date,
-            'due_date' => $request->due_date,
+            'title' => $data['title'],
+            'type' => $data['type'],
+            'difficulty_level' => $data['difficulty_level'] ?? 'medium',
+            'date' => $data['date'],
+            'due_date' => $data['due_date'],
             'created_by' => $request->user()->id,
             'is_active' => true,
         ]);
@@ -98,7 +106,15 @@ class TodoListController extends Controller
      */
     public function update(UpdateTodoListRequest $request, TodoList $todoList): RedirectResponse
     {
-        $todoList->update($request->validated());
+        $data = $request->validated();
+
+        // If type is daily, ensure dates are null
+        if ($request->type === 'daily') {
+            $data['date'] = null;
+            $data['due_date'] = null;
+        }
+
+        $todoList->update($data);
 
         // Update supervisor assignments
         if ($request->has('supervisor_ids') && is_array($request->supervisor_ids) && count($request->supervisor_ids) > 0) {

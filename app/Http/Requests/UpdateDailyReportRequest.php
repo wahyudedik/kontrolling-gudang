@@ -48,6 +48,7 @@ class UpdateDailyReportRequest extends FormRequest
             'warehouse_conditions.*.kurang_bersih' => ['sometimes', 'boolean'],
             'warehouse_conditions.*.tidak_bersih' => ['sometimes', 'boolean'],
             'warehouse_conditions.*.notes' => ['nullable', 'string'],
+            'warehouse_conditions.*.photo' => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'],
             
             // Suppliers
             'suppliers' => ['sometimes', 'array'],
